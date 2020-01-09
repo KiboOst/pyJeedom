@@ -65,6 +65,40 @@ else:
 	print('Unfound variable')
 ```
 
+Appel et passage de paramètres depuis un bloc CODE :
+Ici, on écrit les tags du scénarios dans un fichier json, puis on appelle le script python.
+```php
+$tags = $scenario->getTags();
+$data = array();
+foreach ($tags as $key => $value) {
+  $key = str_replace('#', '', $key);
+  $data[$key] = $value;
+}
+$fp = fopen('/var/www/html/kiboost/data.json', 'w');
+fwrite($fp, json_encode($data));
+fclose($fp);
+
+$result = shell_exec('python /var/www/html/kiboost/doStuff.py');
+$tags['#result#'] = $result;
+$scenario->setTags($tags);
+```
+/var/www/html/kiboost/doStuff.py :
+```python
+#-*- coding: UTF-8 -*-
+import sys,os
+import json
+f = open(r'/var/www/html/kiboost/data.json', "r")
+data = f.read()
+f.close()
+data = json.loads(data)
+
+#do stuff here
+
+#send result to scenario:
+print('something stuffy')
+```
+Vous pouvez ensuite utiliser **tag(result)**, ou une variable enregistrer par le votre script python ou autre, dans la suite de votre scénario.
+
 ## Changelog
 
 ##### 09/01/2020
@@ -72,5 +106,4 @@ else:
 
 ### ToDo
 - byHumanName sur les eqLogic, scenario, cmd, jeeObject etc
--
 
