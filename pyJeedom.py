@@ -1,6 +1,9 @@
 #-*- coding: UTF-8 -*-
 
-"""Requirements:
+""" pyJeedom v0.2
+	https://github.com/KiboOst/pyJeedom
+
+	Requirements:
 
 	Réglages → Système → Configuration / API : Accès API JSONRPC : Activé, IP Blanche, localhost
 	Python 2 / Python 3
@@ -9,8 +12,6 @@
 """
 
 import sys,os
-import time
-import datetime
 import json
 
 if sys.version_info[0] == 2:
@@ -123,6 +124,13 @@ class jeedom():
 			if activateOnly: _params['params']['activateOnly'] = 1
 			if orderByCaterogy: _params['params']['orderByCaterogy'] = 1
 			return self.jeedom.callJeedom(_params)
+		#
+		def byId(self, id=None):
+			allPlugins = self.listPlugin()
+			for plugin in allPlugins:
+				if plugin['id'] == id:
+					return plugin
+			return {"error": {"message": "%s introuvable"%__class__.__name__}}
 		#
 		def install(self, plugin_id=None, logicalId=None):
 			_params = {"method":"plugin::install"}
@@ -268,6 +276,20 @@ class jeedom():
 					return item
 			return {"error": {"message": "%s introuvable"%__class__.__name__}}
 		#
+		def byHumanName(self, _humanName=''):
+			allObjects = self.jeedom.jeeObject.all()
+			objectsList = {}
+			for obj in allObjects:
+				objectsList[obj['id']] = obj['name']
+
+			allEqlogics = self.all()
+			for item in allEqlogics:
+				object_name = objectsList[item['object_id']] if item['object_id'] != None else 'Aucun'
+				humanName = '[%s][%s]'%(object_name, item['name'])
+				if _humanName == humanName:
+					return item
+			return {"error": {"message": "%s introuvable"%__class__.__name__}}
+		#
 		def all(self):
 			_params = {"method":"eqLogic::all"}
 			return self.jeedom.callJeedom(_params)
@@ -321,6 +343,27 @@ class jeedom():
 			if 'error' in result: return result
 			for item in result:
 				if _name == item['name']:
+					return item
+			return {"error": {"message": "%s introuvable"%__class__.__name__}}
+		#
+		def byHumanName(self, _humanName=''):
+			allObjects = self.jeedom.jeeObject.all()
+			objectsList = {}
+			for obj in allObjects:
+				objectsList[obj['id']] = obj['name']
+
+			allEqlogics = self.jeedom.eqLogic.all()
+			allCmds = self.all()
+			for item in allCmds:
+				object_name = ''
+				for eq in allEqlogics:
+					if eq['id'] == item['eqLogic_id']:
+						eqlogic_name = eq['name']
+						object_name = objectsList[eq['object_id']] if eq['object_id'] != None else 'Aucun'
+						break
+
+				humanName = '[%s][%s][%s]'%(object_name, eqlogic_name, item['name'])
+				if _humanName == humanName:
 					return item
 			return {"error": {"message": "%s introuvable"%__class__.__name__}}
 		#
@@ -389,6 +432,21 @@ class jeedom():
 			if 'error' in result: return result
 			for item in result:
 				if _name == item['name']:
+					return item
+			return {"error": {"message": "%s introuvable"%__class__.__name__}}
+		#
+		def byHumanName(self, _humanName=''):
+			allObjects = self.jeedom.jeeObject.all()
+			objectsList = {}
+			for obj in allObjects:
+				objectsList[obj['id']] = obj['name']
+
+			allScenarios = self.all()
+			for item in allScenarios:
+				object_name = objectsList[item['object_id']] if item['object_id'] != None else 'Aucun'
+				group = item['group'] if item['group'] != '' else 'Aucun'
+				humanName = '[%s][%s][%s]'%(object_name, group, item['name'])
+				if _humanName == humanName:
 					return item
 			return {"error": {"message": "%s introuvable"%__class__.__name__}}
 		#
@@ -544,5 +602,8 @@ class jeedom():
 			return result['result']
 		except Exception as e:
 			return {"error":e}
+	#
+	def callJeedomByType(self, _params=''):
+		pass
 	#
 #
