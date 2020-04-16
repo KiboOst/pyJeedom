@@ -1,6 +1,6 @@
 #-*- coding: UTF-8 -*-
 
-""" pyJeedom v0.2
+""" pyJeedom v0.3
 	https://github.com/KiboOst/pyJeedom
 
 	Requirements:
@@ -229,8 +229,10 @@ class jeedom():
 		def __init__(self, parent):
 			self.jeedom = parent
 		#
-		def main(self):
+		def main(self, key=None):
 			_params = {"method":"summary::global"}
+			_params['params'] = {}
+			if key: _params['params']['key'] = key
 			return self.jeedom.callJeedom(_params)
 		#
 		def byId(self, id=None, key=None, raw=None):
@@ -494,6 +496,15 @@ class jeedom():
 			_params['params']['nbLine'] = nbLine
 			return self.jeedom.callJeedom(_params)
 		#
+		def add(self, log='', type='', message='', logicalId=''):
+			_params = {"method":"log::add"}
+			_params['params'] = {}
+			_params['params']['log'] = log
+			_params['params']['type'] = type
+			_params['params']['message'] = message
+			_params['params']['logicalId'] = logicalId
+			return self.jeedom.callJeedom(_params)
+		#
 		def list(self, filtre=None):
 			_params = {"method":"log::list"}
 			_params['params'] = {}
@@ -519,6 +530,15 @@ class jeedom():
 		#
 		def all(self):
 			_params = {"method":"message::all"}
+			return self.jeedom.callJeedom(_params)
+		#
+		def add(self, type='', message='', action='', logicalId=''):
+			_params = {"method":"message::add"}
+			_params['params'] = {}
+			_params['params']['type'] = type
+			_params['params']['message'] = message
+			_params['params']['action'] = action
+			_params['params']['logicalId'] = logicalId
 			return self.jeedom.callJeedom(_params)
 		#
 		def removeAll(self):
