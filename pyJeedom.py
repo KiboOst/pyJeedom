@@ -617,7 +617,7 @@ class jeedom():
 		url = self.adrss + quoteurl(data)
 		response = requestUrl.urlopen(url).read()
 		try:
-			result = json.loads(response)
+			result = json.loads(response.decode())
 			if 'error' in result: return result
 			return result['result']
 		except Exception as e:
