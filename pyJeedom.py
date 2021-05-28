@@ -385,10 +385,11 @@ class jeedom():
 			_params['params']['id'] = id
 			return self.jeedom.callJeedom(_params)
 		#
-		def execCmd(self, id=None):
+		def execCmd(self, id=None, options=None):
 			_params = {"method":"cmd::execCmd"}
 			_params['params'] = {}
 			_params['params']['id'] = id
+			_params['params']['options'] = options
 			return self.jeedom.callJeedom(_params)
 		#
 		def getStatistique(self, id=None):
